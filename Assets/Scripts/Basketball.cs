@@ -22,7 +22,7 @@ public class Basketball : MonoBehaviour
         rb.useGravity = true;
         rb.drag = linearDrag;
         rb.angularDrag = angularDrag;
-        rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+        rb.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
 
         // Collider / PhysicMaterial
         if (physMat != null) sc.material = physMat;

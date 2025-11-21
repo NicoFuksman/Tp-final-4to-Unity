@@ -3,40 +3,49 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class SeguirMano : MonoBehaviour
-
 {
     [Header("Estado")]
     public bool agarrada = false;
+    public bool agarrable = true;
 
     private Rigidbody rb;
     private Transform mano;
 
+    public DeteccionPelotasRaycast DeteccionPelotas;
+
+    [Header("Tiro")]
+    public float fuerzaDisparo = 6f;     
+    public float arcoTiro = 1.0f;   // Cuánto arco tiene el tiro (0.5 a 1.5 es realista)
+
     void Start()
     {
+        DeteccionPelotas = FindObjectOfType<DeteccionPelotasRaycast>();
+
         rb = GetComponent<Rigidbody>();
         if (rb == null)
         {
-            Debug.LogError("PelotaSeguirMano_Update: falta Rigidbody en el GameObject.");
+            Debug.LogError("SeguirMano: falta Rigidbody en la pelota.");
         }
 
         GameObject manoObj = GameObject.Find("mano");
         if (manoObj != null)
             mano = manoObj.transform;
         else
-            Debug.LogError("PelotaSeguirMano_Update: no existe un objeto llamado 'mano' en la escena.");
+            Debug.LogError("SeguirMano: no existe un objeto llamado 'mano' en la escena.");
     }
 
     void Update()
     {
-        // Soltar con espacio
-        if (Input.GetKeyDown(KeyCode.Space))
+        // Soltar/disparar con espacio SOLO si está agarrada
+        if (Input.GetKeyDown(KeyCode.E) && agarrada)
         {
             SoltarPelota();
         }
 
+        // Si está en la mano, seguirla
         if (agarrada && mano != null)
         {
-            // Mientras está agarrada: hacemos kinematic para evitar conflictos de física
+            // Congelar física
             if (!rb.isKinematic)
             {
                 rb.isKinematic = true;
@@ -44,15 +53,13 @@ public class SeguirMano : MonoBehaviour
                 rb.angularVelocity = Vector3.zero;
             }
 
-            // Igualar posición continuamente en Update (sin teletransportes "una vez")
+            // Seguir la mano
             transform.position = mano.position;
-
-            // Evitar rotación: igualamos rotación al Empty (o fijala a Quaternion.identity si querés)
             transform.rotation = mano.rotation;
         }
         else
         {
-            // Si no está agarrada, devolvemos la física normal (solo si estaba kinematic)
+            // Volver física normal si ya no está agarrada
             if (rb.isKinematic)
             {
                 rb.isKinematic = false;
@@ -60,17 +67,30 @@ public class SeguirMano : MonoBehaviour
         }
     }
 
+    // Llamado por tu sistema de detección cuando agarrás la pelota
     public void AgarrarPelota()
     {
         agarrada = true;
+        DeteccionPelotas.pelotaenmano = true;
     }
 
     public void SoltarPelota()
     {
         agarrada = false;
+        DeteccionPelotas.pelotaenmano = false;
+        agarrable = false;
 
-        // Al soltar, permitir rotaciones y física normal
         rb.isKinematic = false;
+
+        // --------- DIRECCIÓN DEL DISPARO CON ARCO ---------
+        Vector3 direccion = (mano.forward * 1f + mano.up * arcoTiro).normalized;
+
+        // --------- ADD FORCE PARA LA PARÁBOLA ---------
+        rb.AddForce(direccion * fuerzaDisparo, ForceMode.Impulse);
+
         rb.constraints = RigidbodyConstraints.None;
+
+        // --------- AUTODESTRUIR PELOTA A LOS 10s ---------
+        Destroy(gameObject, 10f);
     }
 }
