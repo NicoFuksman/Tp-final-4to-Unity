@@ -7,6 +7,7 @@ public class SeguirMano : MonoBehaviour
     [Header("Estado")]
     public bool agarrada = false;
     public bool agarrable = true;
+    public bool yaContado = false;
 
     private Rigidbody rb;
     private Transform mano;

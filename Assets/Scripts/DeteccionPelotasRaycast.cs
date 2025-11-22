@@ -6,6 +6,7 @@ public class DeteccionPelotasRaycast : MonoBehaviour
 {
     public float rayDistance = 5f;
     public bool pelotaenmano = false;
+    public float rayRadius = 1f;
 
     public LayerMask layerMask;
     // Start is called before the first frame update
@@ -18,10 +19,10 @@ public class DeteccionPelotasRaycast : MonoBehaviour
     void Update()
     {
         RaycastHit hit;
-        Vector3 origin = transform.position;
+        Vector3 origin = transform.position + transform.forward * 0.2f;
         Vector3 direction = transform.forward;
 
-        if (Physics.Raycast(origin,direction,out hit,rayDistance,layerMask))
+        if (Physics.SphereCast(origin, rayRadius, direction, out hit, rayDistance, layerMask))
         {
             Debug.Log("Golpeamos: " + hit.collider.gameObject.name);
 
@@ -60,13 +61,11 @@ public class DeteccionPelotasRaycast : MonoBehaviour
                 Debug.Log ("Ya hay una pelota agarrada");
             }
 
-             Debug.DrawLine(origin,hit.point,Color.red);
+            Debug.DrawRay(origin, direction * hit.distance, Color.red);
         }
-
         else
         {
-             Debug.DrawLine(origin,hit.point,Color.green);
-
+            Debug.DrawRay(origin, direction * rayDistance, Color.green);
         }
 
 
