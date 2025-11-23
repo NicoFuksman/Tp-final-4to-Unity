@@ -6,13 +6,15 @@ public class SeguirMano : MonoBehaviour
 {
     [Header("Estado")]
     public bool agarrada = false;
-    public bool agarrable = true;
+    public bool agarrable = false;
     public bool yaContado = false;
+    public bool soltado = false;
 
     private Rigidbody rb;
     private Transform mano;
 
     public DeteccionPelotasRaycast DeteccionPelotas;
+    public basescript basescript;
 
     [Header("Tiro")]
     public float fuerzaDisparo = 6f;     
@@ -38,8 +40,9 @@ public class SeguirMano : MonoBehaviour
     void Update()
     {
         // Soltar/disparar con espacio SOLO si está agarrada
-        if (Input.GetKeyDown(KeyCode.E) && agarrada)
+        if (Input.GetKeyDown(KeyCode.E) && agarrada == true)
         {
+            soltado = true;
             SoltarPelota();
         }
 
@@ -65,6 +68,17 @@ public class SeguirMano : MonoBehaviour
             {
                 rb.isKinematic = false;
             }
+        }
+
+
+        if (basescript.estarquieto == true && agarrada == false && soltado == false)
+        {
+            agarrable = true;
+        }
+
+        else if (basescript.estarquieto == false)
+        {
+            agarrable = false;
         }
     }
 

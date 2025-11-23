@@ -9,6 +9,17 @@ public class DeteccionPelotasRaycast : MonoBehaviour
     public float rayRadius = 1f;
 
     public LayerMask layerMask;
+
+    public int basesCompletadas = 0;
+
+        public void CompletarBase(int numeroBase)
+    {
+        if (basesCompletadas < numeroBase)
+        {
+            basesCompletadas = numeroBase;
+            Debug.Log("Base completada: " + numeroBase);
+        }
+    }
     // Start is called before the first frame update
     void Start()
     {
