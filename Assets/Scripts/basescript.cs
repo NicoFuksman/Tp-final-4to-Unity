@@ -12,6 +12,26 @@ public class basescript : MonoBehaviour
 
     public int numeroDeBase; // 1 = derecha, 2 = medio, 3 = izquierda
 
+    private Renderer objetoRenderer;
+
+    void Start()
+    {
+        objetoRenderer = GetComponent<Renderer>();
+    }
+    
+    void Update()
+    {
+        if (deteccion.basesCompletadas == numeroDeBase - 1)
+        {
+            objetoRenderer.enabled = true;
+        }
+
+        else
+        {
+            objetoRenderer.enabled = false;
+        }
+    }
+
     private void OnTriggerStay(Collider other)
     {
         if (other.gameObject.name == "SimpleFPSController")
